@@ -4,107 +4,270 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Área de Transferência</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f0f4f8;
-            color: #333;
+        :root {
+            --primary: #2DD4BF;
+            --primary-dark: #14B8A6;
+            --secondary: #818CF8;
+            --bg-dark: #0F172A;
+            --bg-light: #1E293B;
+            --text: #F1F5F9;
+            --text-muted: #94A3B8;
         }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(circle at top right, var(--bg-light), var(--bg-dark));
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 700px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            margin-bottom: 2rem;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         h1 {
-            color: #2c3e50;
+            color: var(--primary);
             text-align: center;
             margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(45, 212, 191, 0.3);
+            letter-spacing: 1px;
         }
+
         .input-group {
             display: flex;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
         }
+
+        .input-group:focus-within {
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.3);
+        }
+
         #newWord {
             flex-grow: 1;
-            padding: 10px;
+            padding: 18px 24px;
             font-size: 16px;
-            border: 1px solid #bdc3c7;
-            border-radius: 4px 0 0 4px;
+            border: none;
+            outline: none;
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text);
+            transition: all 0.3s ease;
         }
-        button {
-            padding: 10px 15px;
+
+        .btn {
+            padding: 15px 30px;
             font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            background-color: #3498db;
-            color: white;
             border: none;
-            transition: background-color 0.3s, transform 0.1s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        button:active {
-            transform: scale(0.98);
-        }
-        #addButton {
-            border-radius: 0 4px 4px 0;
-        }
-        #wordList {
-            background-color: white;
-            border: 1px solid #bdc3c7;
-            border-radius: 4px;
-            min-height: 100px;
-            margin-bottom: 20px;
-            padding: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--bg-dark);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+            align-items: center;
+            gap: 8px;
         }
-        .word-item {
-            background-color: #ecf0f1;
-            border: none;
-            border-radius: 20px;
-            padding: 8px 16px;
+
+        .btn i {
             font-size: 14px;
-            color: #2c3e50;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
+            transition: transform 0.3s ease;
         }
-        .word-item:hover {
-            background-color: #bdc3c7;
+
+        .btn:hover i {
+            transform: translateX(3px);
         }
-        .word-item:active {
-            transform: scale(0.95);
+
+        #wordList {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 16px;
+            min-height: 150px;
+            margin-bottom: 25px;
+            padding: 20px;
+            gap: 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            transition: all 0.3s ease;
         }
-        .action-buttons {
+
+        .word-item-container {
+            position: relative;
+            height: fit-content;
+        }
+
+        .word-item {
+            width: 100%;
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.15), rgba(45, 212, 191, 0.1));
+            border: 1px solid rgba(45, 212, 191, 0.2);
+            padding: 12px 20px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            color: #E2E8F0; /* Cor clara para o texto */
+            text-align: left;
+            font-weight: 500;
+            letter-spacing: 0.3px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            margin-top: 20px;
         }
-        .action-buttons button {
-            flex-basis: 48%;
-            border-radius: 4px;
+
+        .word-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(45, 212, 191, 0.2);
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.2), rgba(45, 212, 191, 0.15));
         }
-        #uploadButton {
-            background-color: #e74c3c;
+
+        .remove-btn {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            color: #FF4D4D;
+            border: 2px solid #FF4D4D;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
         }
-        #uploadButton:hover {
-            background-color: #c0392b;
+
+        .word-item-container:hover .remove-btn {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .action-buttons .btn {
+            padding: 18px 30px;
+            border-radius: 12px;
+            font-size: 14px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .footer {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer::before,
+        .footer::after {
+            content: '';
+            height: 1px;
+            width: 30px;
+            background: linear-gradient(to right, transparent, var(--primary), transparent);
+        }
+
+        .footer span {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            #wordList {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .copied {
+            animation: copyFlash 0.3s ease;
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.3), rgba(45, 212, 191, 0.25)) !important;
+            color: #FFFFFF !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes copyFlash {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
-    <h1>Área de Transferência</h1>
-    <div class="input-group">
-        <input type="text" id="newWord" placeholder="Digite uma palavra ou frase">
-        <button id="addButton" onclick="addWord()">Adicionar</button>
+    <div class="container">
+        <h1>Área de Transferência</h1>
+        <div class="input-group">
+            <input type="text" id="newWord" placeholder="Digite uma palavra ou frase">
+            <button id="addButton" class="btn" onclick="addWord()">
+                Adicionar
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        <div id="wordList"></div>
+        <div class="action-buttons">
+            <button class="btn" onclick="downloadWords()">
+                <i class="fas fa-download"></i>
+                Baixar Itens
+            </button>
+            <button class="btn" id="uploadButton" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-upload"></i>
+                Carregar Itens
+            </button>
+        </div>
+        <input type="file" id="fileInput" accept=".txt" style="display:none;" onchange="uploadWords()">
     </div>
-    <div id="wordList"></div>
-    <div class="action-buttons">
-        <button onclick="downloadWords()">Baixar Itens</button>
-        <button id="uploadButton" onclick="document.getElementById('fileInput').click()">Carregar Itens</button>
+    <div class="footer">
+        Desenvolvido por <span>Aleksandro Alves</span>
     </div>
-    <input type="file" id="fileInput" accept=".txt" style="display:none;" onchange="uploadWords()">
-
     <script>
         let words = [];
 
@@ -121,11 +284,25 @@
             const wordList = document.getElementById('wordList');
             wordList.innerHTML = '';
             words.forEach((word, index) => {
+                const container = document.createElement('div');
+                container.className = 'word-item-container';
+
                 const wordItem = document.createElement('button');
-                wordItem.className = 'word-item';
+                wordItem.className = 'word-item btn';
                 wordItem.textContent = word;
                 wordItem.onclick = () => copyWord(index);
-                wordList.appendChild(wordItem);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.innerHTML = '×';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    removeWord(index);
+                };
+
+                container.appendChild(wordItem);
+                container.appendChild(removeBtn);
+                wordList.appendChild(container);
             });
         }
 
@@ -135,12 +312,10 @@
                     const wordBtn = document.querySelectorAll('.word-item')[index];
                     const originalText = wordBtn.textContent;
                     wordBtn.textContent = 'Copiado!';
-                    wordBtn.style.backgroundColor = '#2ecc71';
-                    wordBtn.style.color = 'white';
+                    wordBtn.classList.add('copied');
                     setTimeout(() => {
                         wordBtn.textContent = originalText;
-                        wordBtn.style.backgroundColor = '';
-                        wordBtn.style.color = '';
+                        wordBtn.classList.remove('copied');
                     }, 1500);
                 })
                 .catch(err => console.error('Erro ao copiar: ', err));
@@ -180,6 +355,11 @@
                 addWord();
             }
         });
+
+        function removeWord(index) {
+            words.splice(index, 1);
+            updateWordList();
+        }
     </script>
 </body>
 </html>
