@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Guarde e copie frases rapidamente. Salve, baixe e carregue itens.">
+    <meta name="theme-color" content="#0F172A">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <title>Área de Transferência</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -107,11 +110,16 @@
             transform: translateX(3px);
         }
 
+        .btn:focus-visible, .word-item:focus-visible, .remove-btn:focus-visible {
+            outline: 3px solid rgba(45, 212, 191, 0.6);
+            outline-offset: 2px;
+        }
+
         #wordList {
             background: rgba(15, 23, 42, 0.4);
             border-radius: 16px;
             min-height: 150px;
-            margin-bottom: 25px;
+            margin-bottom: 12px;
             padding: 20px;
             gap: 12px;
             display: grid;
@@ -166,16 +174,16 @@
             transition: all 0.3s ease;
         }
 
-        .word-item-container:hover .remove-btn {
+        .word-item-container:hover .remove-btn, .remove-btn:focus {
             opacity: 1;
             transform: scale(1);
         }
 
         .action-buttons {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 20px;
-            margin-top: 30px;
+            margin-top: 16px;
         }
 
         .action-buttons .btn {
@@ -240,49 +248,149 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .meta {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin: 6px 0 20px;
+            text-align: right;
+        }
+
+        .empty-state {
+            color: var(--text-muted);
+            text-align: center;
+            padding: 24px;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Área de Transferência</h1>
+        <label for="newWord" class="visually-hidden">Novo item</label>
         <div class="input-group">
-            <input type="text" id="newWord" placeholder="Digite uma palavra ou frase">
-            <button id="addButton" class="btn" onclick="addWord()">
+            <input type="text" id="newWord" placeholder="Digite uma palavra ou frase" autocomplete="off" maxlength="200">
+            <button id="addButton" class="btn" type="button" onclick="addWord()">
                 Adicionar
-                <i class="fas fa-plus"></i>
+                <i class="fas fa-plus" aria-hidden="true"></i>
             </button>
         </div>
-        <div id="wordList"></div>
+        <div id="wordList" aria-live="polite" aria-label="Lista de itens"></div>
+        <div id="itemCount" class="meta" aria-live="polite"></div>
         <div class="action-buttons">
-            <button class="btn" onclick="downloadWords()">
-                <i class="fas fa-download"></i>
+            <button class="btn" type="button" onclick="downloadWords()">
+                <i class="fas fa-download" aria-hidden="true"></i>
                 Baixar Itens
             </button>
-            <button class="btn" id="uploadButton" onclick="document.getElementById('fileInput').click()">
-                <i class="fas fa-upload"></i>
+            <button class="btn" id="uploadButton" type="button" onclick="document.getElementById('fileInput').click()">
+                <i class="fas fa-upload" aria-hidden="true"></i>
                 Carregar Itens
+            </button>
+            <button class="btn" type="button" onclick="copyAllWords()">
+                <i class="fas fa-copy" aria-hidden="true"></i>
+                Copiar Todos
+            </button>
+            <button class="btn" type="button" onclick="clearAllWords()">
+                <i class="fas fa-trash" aria-hidden="true"></i>
+                Limpar Tudo
             </button>
         </div>
         <input type="file" id="fileInput" accept=".txt" style="display:none;" onchange="uploadWords()">
+        <div id="sr-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></div>
     </div>
     <div class="footer">
         Desenvolvido por <span>Aleksandro Alves</span>
     </div>
     <script>
+        const STORAGE_KEY = 'clipboard_words_v1';
         let words = [];
 
-        function addWord() {
-            const newWord = document.getElementById('newWord').value.trim();
-            if (newWord !== '') {
-                words.push(newWord);
-                document.getElementById('newWord').value = '';
-                updateWordList();
+        function normalizeWord(w) {
+            return w.trim();
+        }
+
+        function loadWords() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) {
+                        words = parsed.filter(Boolean).map(normalizeWord);
+                    }
+                }
+            } catch (e) {
+                console.warn('Falha ao carregar itens do armazenamento local', e);
             }
+        }
+
+        function saveWords() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+            } catch (e) {
+                console.warn('Falha ao salvar itens no armazenamento local', e);
+            }
+        }
+
+        function updateCount() {
+            const el = document.getElementById('itemCount');
+            const count = words.length;
+            el.textContent = count === 0 ? 'Nenhum item' : `${count} ${count === 1 ? 'item' : 'itens'}`;
+        }
+
+        function announce(msg) {
+            const sr = document.getElementById('sr-status');
+            sr.textContent = msg;
+        }
+
+        function addWord() {
+            const input = document.getElementById('newWord');
+            const raw = input.value;
+            const entries = raw.split('\n').map(normalizeWord).filter(Boolean);
+            if (entries.length === 0) return;
+
+            const set = new Set(words.map(w => w.toLowerCase()));
+            let added = 0;
+            for (const entry of entries) {
+                const lower = entry.toLowerCase();
+                if (!set.has(lower)) {
+                    words.push(entry);
+                    set.add(lower);
+                    added++;
+                }
+            }
+
+            input.value = '';
+            updateWordList();
+            saveWords();
+            if (added > 0) announce(`${added} ${added === 1 ? 'item adicionado' : 'itens adicionados'}`);
         }
 
         function updateWordList() {
             const wordList = document.getElementById('wordList');
             wordList.innerHTML = '';
+
+            if (words.length === 0) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = 'Sua lista está vazia. Adicione itens para facilitar o copiar e colar.';
+                wordList.appendChild(empty);
+                updateCount();
+                return;
+            }
+
             words.forEach((word, index) => {
                 const container = document.createElement('div');
                 container.className = 'word-item-container';
@@ -290,10 +398,16 @@
                 const wordItem = document.createElement('button');
                 wordItem.className = 'word-item btn';
                 wordItem.textContent = word;
+                wordItem.type = 'button';
+                wordItem.setAttribute('aria-label', `Copiar: ${word}`);
+                wordItem.title = 'Clique para copiar';
                 wordItem.onclick = () => copyWord(index);
 
                 const removeBtn = document.createElement('button');
                 removeBtn.className = 'remove-btn';
+                removeBtn.type = 'button';
+                removeBtn.setAttribute('aria-label', 'Remover item');
+                removeBtn.title = 'Remover';
                 removeBtn.innerHTML = '×';
                 removeBtn.onclick = (e) => {
                     e.stopPropagation();
@@ -304,6 +418,8 @@
                 container.appendChild(removeBtn);
                 wordList.appendChild(container);
             });
+
+            updateCount();
         }
 
         function copyWord(index) {
@@ -313,12 +429,21 @@
                     const originalText = wordBtn.textContent;
                     wordBtn.textContent = 'Copiado!';
                     wordBtn.classList.add('copied');
+                    announce(`Copiado: ${originalText}`);
                     setTimeout(() => {
                         wordBtn.textContent = originalText;
                         wordBtn.classList.remove('copied');
                     }, 1500);
                 })
                 .catch(err => console.error('Erro ao copiar: ', err));
+        }
+
+        function copyAllWords() {
+            if (words.length === 0) return;
+            const content = words.join('\n');
+            navigator.clipboard.writeText(content)
+                .then(() => announce('Todos os itens foram copiados'))
+                .catch(err => console.error('Erro ao copiar todos: ', err));
         }
 
         function downloadWords() {
@@ -341,11 +466,24 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const content = e.target.result;
-                    const uploadedWords = content.split('\n').filter(word => word.trim() !== '');
-                    words = words.concat(uploadedWords);
+                    const uploaded = content.split('\n').map(normalizeWord).filter(Boolean);
+                    if (uploaded.length === 0) return;
+                    const set = new Set(words.map(w => w.toLowerCase()));
+                    let added = 0;
+                    for (const w of uploaded) {
+                        const lower = w.toLowerCase();
+                        if (!set.has(lower)) {
+                            words.push(w);
+                            set.add(lower);
+                            added++;
+                        }
+                    }
                     updateWordList();
+                    saveWords();
+                    if (added > 0) announce(`${added} ${added === 1 ? 'item carregado' : 'itens carregados'}`);
                 };
                 reader.readAsText(file);
+                fileInput.value = '';
             }
         }
 
@@ -359,7 +497,23 @@
         function removeWord(index) {
             words.splice(index, 1);
             updateWordList();
+            saveWords();
+            announce('Item removido');
         }
+
+        function clearAllWords() {
+            if (words.length === 0) return;
+            const ok = confirm('Tem certeza que deseja remover todos os itens?');
+            if (!ok) return;
+            words = [];
+            updateWordList();
+            saveWords();
+            announce('Todos os itens foram removidos');
+        }
+
+        // Inicialização
+        loadWords();
+        updateWordList();
     </script>
 </body>
 </html>
