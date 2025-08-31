@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Guarde e copie frases rapidamente. Salve, baixe e carregue itens.">
     <meta name="theme-color" content="#0F172A">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <title>Área de Transferência</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -84,10 +87,45 @@
             --glow-secondary: 0 0 20px rgba(139, 92, 246, 0.3);
             --glow-success: 0 0 20px rgba(16, 185, 129, 0.3);
             --glow-error: 0 0 20px rgba(239, 68, 68, 0.3);
+            
+            /* Typography System */
+            --font-family-primary: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-family-fallback: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            
+            /* Font Sizes - Hierarchical Scale */
+            --font-size-h1: 3rem;        /* 48px - Main title */
+            --font-size-h2: 2rem;        /* 32px - Subtitles */
+            --font-size-body-large: 1.125rem; /* 18px - Primary text */
+            --font-size-body: 1rem;      /* 16px - Standard text */
+            --font-size-small: 0.875rem; /* 14px - Secondary text */
+            --font-size-caption: 0.75rem; /* 12px - Metadata */
+            
+            /* Font Weights */
+            --font-weight-light: 300;
+            --font-weight-regular: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 600;
+            --font-weight-bold: 700;
+            --font-weight-extrabold: 800;
+            
+            /* Line Heights */
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+            --line-height-relaxed: 1.6;
+            
+            /* Letter Spacing */
+            --letter-spacing-tight: -0.025em;
+            --letter-spacing-normal: 0;
+            --letter-spacing-wide: 0.025em;
+            --letter-spacing-wider: 0.05em;
         }
 
         body {
-            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-body);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-normal);
+            letter-spacing: var(--letter-spacing-normal);
             min-height: 100vh;
             background: radial-gradient(circle at top right, var(--bg-medium), var(--bg-dark));
             color: var(--text);
@@ -97,6 +135,8 @@
             align-items: center;
             padding: 20px;
             transition: all 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .container {
@@ -121,10 +161,12 @@
             color: var(--primary);
             text-align: center;
             margin-bottom: 30px;
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: var(--font-size-h1);
+            font-weight: var(--font-weight-bold);
+            line-height: var(--line-height-tight);
+            letter-spacing: var(--letter-spacing-tight);
             text-shadow: var(--glow-primary);
-            letter-spacing: 1px;
+            font-family: var(--font-family-primary);
         }
 
         .input-group {
@@ -145,7 +187,11 @@
         #newWord {
             flex-grow: 1;
             padding: 18px 24px;
-            font-size: 16px;
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-body);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-normal);
+            letter-spacing: var(--letter-spacing-normal);
             border: none;
             outline: none;
             background: var(--surface-dark);
@@ -155,12 +201,16 @@
 
         #newWord::placeholder {
             color: var(--text-muted);
+            font-weight: var(--font-weight-regular);
         }
 
         .btn {
             padding: 15px 30px;
-            font-size: 16px;
-            font-weight: 600;
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-body);
+            font-weight: var(--font-weight-semibold);
+            line-height: var(--line-height-normal);
+            letter-spacing: var(--letter-spacing-wide);
             cursor: pointer;
             border: none;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
@@ -213,8 +263,11 @@
             transition: all 0.3s ease;
             color: var(--text-secondary);
             text-align: left;
-            font-weight: 500;
-            letter-spacing: 0.3px;
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-body);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-normal);
+            letter-spacing: var(--letter-spacing-wide);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -266,8 +319,9 @@
         .action-buttons .btn {
             padding: 18px 30px;
             border-radius: 12px;
-            font-size: 14px;
-            letter-spacing: 1px;
+            font-size: var(--font-size-small);
+            font-weight: var(--font-weight-semibold);
+            letter-spacing: var(--letter-spacing-wider);
             text-transform: uppercase;
         }
 
@@ -275,9 +329,11 @@
             color: var(--text-muted);
             text-align: center;
             padding: 1rem;
-            font-size: 0.9rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-small);
+            font-weight: var(--font-weight-medium);
+            line-height: var(--line-height-normal);
+            letter-spacing: var(--letter-spacing-wide);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -296,10 +352,17 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            font-weight: 600;
+            font-weight: var(--font-weight-semibold);
         }
 
         @media (max-width: 600px) {
+            :root {
+                /* Adjust font sizes for mobile */
+                --font-size-h1: 2.5rem;      /* 40px - Smaller on mobile */
+                --font-size-h2: 1.75rem;     /* 28px - Smaller on mobile */
+                --font-size-body-large: 1rem; /* 16px - Smaller on mobile */
+            }
+
             .container {
                 padding: 1.5rem;
             }
@@ -310,6 +373,21 @@
 
             #wordList {
                 grid-template-columns: 1fr;
+            }
+
+            h1 {
+                margin-bottom: 24px;
+            }
+
+            .btn {
+                padding: 16px 24px;
+                font-size: var(--font-size-body);
+            }
+
+            .action-buttons .btn {
+                padding: 16px 24px;
+                font-size: var(--font-size-body);
+                letter-spacing: var(--letter-spacing-wide);
             }
         }
 
@@ -339,9 +417,70 @@
             border: 0;
         }
 
+        /* Typography Utility Classes */
+        .text-h1 {
+            font-size: var(--font-size-h1);
+            font-weight: var(--font-weight-bold);
+            line-height: var(--line-height-tight);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        .text-h2 {
+            font-size: var(--font-size-h2);
+            font-weight: var(--font-weight-semibold);
+            line-height: var(--line-height-tight);
+            letter-spacing: var(--letter-spacing-tight);
+        }
+
+        .text-body-large {
+            font-size: var(--font-size-body-large);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-relaxed);
+            letter-spacing: var(--letter-spacing-normal);
+        }
+
+        .text-body {
+            font-size: var(--font-size-body);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-normal);
+            letter-spacing: var(--letter-spacing-normal);
+        }
+
+        .text-small {
+            font-size: var(--font-size-small);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-normal);
+            letter-spacing: var(--letter-spacing-normal);
+        }
+
+        .text-caption {
+            font-size: var(--font-size-caption);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-normal);
+            letter-spacing: var(--letter-spacing-wide);
+        }
+
+        /* Enhanced text contrast for better readability */
+        .text-high-contrast {
+            color: var(--text);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .text-medium-contrast {
+            color: var(--text-secondary);
+        }
+
+        .text-low-contrast {
+            color: var(--text-muted);
+        }
+
         .meta {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-small);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-normal);
+            letter-spacing: var(--letter-spacing-normal);
             margin: 6px 0 20px;
             text-align: right;
         }
@@ -353,6 +492,11 @@
             border: 1px dashed var(--border);
             border-radius: 12px;
             background: var(--surface-dark);
+            font-family: var(--font-family-primary);
+            font-size: var(--font-size-body);
+            font-weight: var(--font-weight-regular);
+            line-height: var(--line-height-relaxed);
+            letter-spacing: var(--letter-spacing-normal);
         }
     </style>
 </head>
